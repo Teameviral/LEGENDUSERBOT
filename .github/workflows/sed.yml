@@ -16,6 +16,6 @@ jobs:
           commit_message: 'SeD Replacer'
           commit_options: '--no-verify'
           repository: .
-          commit_user_name: TeamEviral
+          commit_user_name: Teameviral
           commit_user_email: dxpubg61@gmail.com
-          commit_author: TeamEviral <dxpubg61@gmail.com>
+          commit_author: Teameviral <dxpubg61@gmail.com>
