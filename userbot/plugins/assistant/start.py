@@ -1,4 +1,5 @@
 import asyncio
+import io
 import re
 
 from telethon import Button, custom, events
@@ -10,7 +11,8 @@ from userbot.plugins.sql_helper.blacklist_assistant import (
     is_he_added,
     removenibba,
 )
-from userbot.plugins.sql_helper.botusers import add_me_in_db, his_userid
+
+# from userbot.plugins.sql_helper.botusers import add_me_in_db, his_userid
 from userbot.plugins.sql_helper.idadder import (
     add_usersid_in_db,
     already_added,
@@ -36,7 +38,10 @@ async def start(event):
                     Button.url(" Support ", "https://t.me/Legend_Userbot"),
                     Button.url(" Updates ", "https://t.me/Official_LegendBot"),
                 ],
-                [custom.Button.inline("Settings", data="osg")],
+                [
+                    custom.Button.inline("Users", data="users"),
+                    custom.Button.inline("Settings", data="osg"),
+                ],
                 [custom.Button.inline("Hack", data="hack")],
             ],
         )
@@ -52,9 +57,8 @@ async def start(event):
             buttons=[
                 [
                     custom.Button.inline(" Rules ", data="rules"),
-                    custom.Button.inline(" Close ", data="close"),
+                    custom.Button.inline(" Close ", data="v_close"),
                 ],
-                [custom.Button.inline(" Hack ", data="v_hack")],
             ],
         )
 
@@ -66,12 +70,43 @@ async def start(event):
 async def help(event):
     await event.delete()
     if event.query.user_id is not bot.uid:
+        await event.answer(
+            "This Is Not For U My Master",
+            catch_time=0,
+            alert=True,
+        )
+    else:
         await tgbot.send_message(
             event.chat_id,
             message="🔰Rᴇᴀᴅ Tʜᴇ Rᴜʟᴇꜱ Tᴏᴏ🔰\n\n🔹 Dᴏɴ'ᴛ Sᴩᴀᴍ\n🔹 ᴛᴀʟᴋ Fʀɪᴇɴᴅʟy\n🔹 Dᴏɴ'ᴛ Bᴇ Rᴜᴅᴇ\n🔹 Sᴇɴᴅ Uʀ Mᴇꜱꜱᴀɢᴇꜱ Hᴇʀᴇ\n🔹 Nᴏ Pᴏʀɴᴏɢʀᴀᴘʜʏ\n🔹 Dᴏɴ'ᴛ Wʀɪᴛᴇ Bᴀᴅ Wᴏʀᴅs.\n\nWʜᴇɴ I Gᴇᴛ Fʀᴇᴇ Tɪᴍᴇ , I'ʟʟ Rᴇᴩʟy U 💯✅",
             buttons=[
-                [custom.Button.inline("Back", data="osg")],
+                [custom.Button.inline("Close", data="close")],
             ],
+        )
+
+
+@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"users")))
+async def users(event):
+    if event.query.user_id == bot.uid:
+        await event.delete()
+        total_users = get_all_users()
+        users_list = "⚜List Of Total Users In Bot.⚜ \n\n"
+        for starked in total_users:
+            users_list += ("==> {} \n").format(int(starked.chat_id))
+        with io.BytesIO(str.encode(users_list)) as tedt_file:
+            tedt_file.name = "userlist.txt"
+            await tgbot.send_file(
+                event.chat_id,
+                tedt_file,
+                force_document=True,
+                caption="Total Users In Your Bot.",
+                allow_cache=False,
+            )
+    else:
+        await event.answer(
+            "Wait ... Sorry U are Not My Owmer So, U Cant Acesss It",
+            cache_time=0,
+            alert=True,
         )
 
 

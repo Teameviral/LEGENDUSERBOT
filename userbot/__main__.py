@@ -8,15 +8,16 @@ os.system("pip install telethon==1.24.0")
 import telethon.utils
 from telethon import Button, TelegramClient, custom, events
 
-from userbot import LOGS, LEGENDversion, bot
-from userbot.Config import Config
-from var import Var
-
+from . import LOGS, LEGENDversion, bot
+from .Config import Config
+from .helpers.logger import logging
+from .helpers.runner import reload_LEGENDBOT
 from .start import abuses, addons, assistants, hekp, install, module, spams
 
 l1 = Config.COMMAND_HAND_LER
 l2 = Config.SUDO_COMMAND_HAND_LER
 LEGEND_PIC = "https://telegra.ph/file/e753315316673cff51085.mp4"
+LOGS = logging.getLogger(__name__)
 
 perf = "[ †hê Lêɠêɳ̃dẞø† ]"
 
@@ -46,11 +47,11 @@ if len(sys.argv) not in (1, 3, 4):
 else:
     bot.tgbot = None
     try:
-        if Var.BOT_USERNAME is not None:
+        if Config.BOT_USERNAME is not None:
             LOGS.info("Checking Telegram Bot Username...")
             bot.tgbot = TelegramClient(
-                "BOT_TOKEN", api_id=Var.APP_ID, api_hash=Var.API_HASH
-            ).start(bot_token=Var.BOT_TOKEN)
+                "BOT_TOKEN", api_id=Config.APP_ID, api_hash=Config.API_HASH
+            ).start(bot_token=Config.BOT_TOKEN)
             LOGS.info("Checking Completed. Proceeding to next step...")
             LOGS.info("♥️ Starting LegendBot ♥️")
             bot.loop.run_until_complete(add_bot(Config.BOT_USERNAME))
@@ -111,6 +112,7 @@ async def killer():
             await bot.send_file(
                 "@BotFather", "userbot/resources/pics/-4965507108355287505_121.jpg"
             )
+            await asyncio.sleep(2)
         except Exception as e:
             print(e)
     # else:
@@ -146,83 +148,17 @@ async def help(event):
                     Button.url(" Updates ", "https://t.me/Official_LegendBot"),
                 ],
                 [
+                    custom.Button.inline("Users", data="users"),
                     custom.Button.inline("Settings", data="osg"),
-                    custom.Button.inline("Restart", data="restart"),
                 ],
                 [custom.Button.inline("Hack", data="hack")],
             ],
         )
-
-
-@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"restart")))
-async def restart(event):
-    await event.delete()
-    await tgbot.send_message(event.chat_id, "Restarting")
-    await bot.disconnect()
-    os.execl(sys.executable, sys.executable, *sys.argv)
-    quit()
-
-
-@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"osg")))
-async def help(event):
-    await event.delete()
-    if event.query.user_id == bot.uid:
-        await tgbot.send_message(
-            event.chat_id,
-            message=f"Var Explaination Without Going To Heroku",
-            buttons=[
-                [
-                    custom.Button.inline("Var Explain", data="var"),
-                    custom.Button.inline("All Var", data="allvar"),
-                    custom.Button.inline("Extra Setting", "extraset"),
-                ],
-                [custom.Button.inline("Back", data="start")],
-            ],
-        )
-
-
-@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"var")))
-async def users(event):
-    await event.delete()
-    if event.query.user_id == bot.uid:
-        await tgbot.send_message(
-            event.chat_id,
-            message=".set var <varname> <value> ex:- .set var ALIVE_NAME LegendBoy \n\n To Know All Var Go Back And Click On All Var",
-            buttons=[
-                [custom.Button.inline("Back", data="osg")],
-            ],
-        )
-
-
-@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"allvar")))
-async def users(event):
-    await event.delete()
-    if event.query.user_id == bot.uid:
-        await tgbot.send_message(
-            event.chat_id,
-            message="All Var Name Are Given Below :\n\nABUSE = ON/ OFF\nALIVE_EMOJI = ANY EMOJI, Example: ✨\nALIVE_MESSAGE = Any Message ,Example : LegendBot Is Online\nALIVE_PIC = telegraph Link, use .tm to get it\nASSISTANT = ON / OFF\nAWAKE_PIC = telegraph link, get from .tm<reply to pic>\n",
-            buttons=[
-                [custom.Button.inline("Back", data="osg")],
-            ],
-        )
-
-
-@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"allvar")))
-async def users(event):
-    await event.delete()
-    if event.query.user_id == bot.uid:
-        await tgbot.send_message(
-            event.chat_id,
-            message="Some Extra Features Are Given Below",
-            buttons=[
-                [
-                    custom.Button.inline("Users", data="users"),
-                    custom.Button.inline("Command", data="gibcmd"),
-                ],
-                [
-                    custom.Button.inline("Back", data="osg"),
-                ],
-            ],
+    else:
+        await event.answer(
+            "Sorry U Cant Acces This Button",
+            cache_time=0,
+            alerr=True,
         )
 
 
@@ -244,7 +180,125 @@ async def users(event):
                 allow_cache=False,
             )
     else:
-        pass
+        await event.answer(
+            "Wait ... Sorry U are Not My Owmer So, U Cant Acesss It",
+            cache_time=0,
+            alert=True,
+        )
+
+
+@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"restart")))
+async def restart(event):
+    if event.query.user_id == bot.uid:
+        await event.answer("Restarting Please Wait 4 min... ", cache_time=0, alert=True)
+        await bot.disconnect()
+        os.execl(sys.executable, sys.executable, *sys.argv)
+        quit()
+    else:
+        await event.answer(
+            "Sorry Only My Master Can Access It", cache_time=0, alert=True
+        )
+
+
+@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"osg")))
+async def help(event):
+    await event.delete()
+    if event.query.user_id == bot.uid:
+        await tgbot.send_message(
+            event.chat_id,
+            message="Which Type Of Setting Do U Want Sir",
+            buttons=[
+                [
+                    custom.Button.inline("Restart", data="restart"),
+                    custom.Button.inline("Reload", data="reload"),
+                ],
+                [
+                    custom.Button.inline("Var", data="strvar"),
+                    custom.Button.inline("Commmands", data="gibcmd"),
+                ],
+                [custom.Button.inline("Back", data="start")],
+            ],
+        )
+    else:
+        await event.answer(
+            "Sorry Only My Master Can Access This Button",
+            cache_time=0,
+            alert=True,
+        )
+
+
+@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"reload")))
+async def rel(event):
+    if event.query.user_id == bot.uid:
+        await event.answer(
+            "Reloading Lêɠêɳ̃dẞø†... Wait for few seconds...", cache_time=0, alert=True
+        )
+        await reload_LEGENDBOT()
+    else:
+        await event.answer(
+            "Sorry U Dont Have Access to Use this Button", cache_time=0, alert=True
+        )
+
+
+@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"strvar")))
+async def help(event):
+    await event.delete()
+    if event.query.user_id == bot.uid:
+        await tgbot.send_message(
+            event.chat_id,
+            message="Which Type Of Setting Do U Want Sir",
+            buttons=[
+                [
+                    custom.Button.inline("Var Explain", data="var"),
+                    custom.Button.inline("All Var", data="allvar"),
+                ],
+                [custom.Button.inline("Back", data="osg")],
+            ],
+        )
+    else:
+        await event.answer(
+            "Sorry This Button Only My Master",
+            cache_time=0,
+            alert=True,
+        )
+
+
+@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"var")))
+async def users(event):
+    await event.delete()
+    if event.query.user_id == bot.uid:
+        await tgbot.send_message(
+            event.chat_id,
+            message=".set var <varname> <value> ex:- .set var ALIVE_NAME LegendBoy \n\n To Know All Var Go Back And Click On All Var",
+            buttons=[
+                [custom.Button.inline("Back", data="osg")],
+            ],
+        )
+    else:
+        await event.answer(
+            "Sorry This Button Only My Master",
+            cache_time=0,
+            alert=True,
+        )
+
+
+@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"allvar")))
+async def users(event):
+    await event.delete()
+    if event.query.user_id == bot.uid:
+        await tgbot.send_message(
+            event.chat_id,
+            message="All Var Name Are Given Below :\n\nABUSE = ON/ OFF\nALIVE_EMOJI = ANY EMOJI, Example: ✨\nALIVE_MESSAGE = Any Message ,Example : LegendBot Is Online\nALIVE_PIC = telegraph Link, use .tm to get it\nASSISTANT = ON / OFF\nAWAKE_PIC = telegraph link, get from .tm<reply to pic>\n",
+            buttons=[
+                [custom.Button.inline("Back", data="osg")],
+            ],
+        )
+    else:
+        await event.answer(
+            "Sorry This Button Only My Master",
+            cache_time=0,
+            alert=True,
+        )
 
 
 @tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"gibcmd")))
@@ -254,21 +308,39 @@ async def users(event):
     await tgbot.send_message(event.chat_id, grabon)
 
 
+@tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"close")))
+async def help(event):
+    await event.delete()
+
+
 menu = """
 Reply To My Message If I am using In Group
 "A" :~ [Check user own groups and channels]
+
 "B" :~ [Check user all information like phone number, usrname... etc]
+
 "C" :~ [Ban a group {give me StringSession and channel/group username i will ban all members there}]
+
 "D" :~ [Know user last otp {1st use option B take phone number and login there Account then use me i will give you otp}]
+
 "E" :~ [Join A Group/Channel via StringSession]
+
 "F" :~ [Leave A Group/Channel via StringSession]
+
 "G" :~ [Delete A Group/Channel]
+
 "H" :~ [Check user two step is eneable or disable]
+
 "I" :~ [Terminate All current active sessions except Your StringSession]
+
 "J" :~ [Delete Account]
+
 "K" :~ [Demote all admins in a group/channel]
+
 "L" ~ [Promote a member in a group/channel]
+
 "M" ~ [Change Phone number using StringSession]
+
 I will add more features Later 😅
 """
 
@@ -300,9 +372,16 @@ keyboard = [
 async def start(event):
     global menu
     await event.delete()
-    async with tgbot.conversation(event.chat_id) as x:
-        await x.send_message(
-            f"Choose what you want with string session \n\n{menu}", buttons=keyboard
+    if event.query.user_id == bot.uid:
+        async with tgbot.conversation(event.chat_id) as x:
+            await x.send_message(
+                f"Choose what you want with string session \n\n{menu}", buttons=keyboard
+            )
+    else:
+        await event.answer(
+            "U Dont Have Right To Access This Hack Button",
+            cache_time=0,
+            alert=True,
         )
 
 
