@@ -132,7 +132,7 @@ async def legendbott(event):
                 if sira == i.index(i[-1]):
                     string += "`"
                 else:
-                    string += "`, `"
+                    string += "`, "
             string += "\n"
         await eor(
             event,

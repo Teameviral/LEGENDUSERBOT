@@ -57,24 +57,17 @@ async def start(event):
             buttons=[
                 [
                     custom.Button.inline(" Rules ", data="rules"),
-                    custom.Button.inline(" Close ", data="v_close"),
+                    Button.url(" Support ", "https://t.me/Legend_Userbot"),
                 ],
             ],
         )
 
 
 # Data's
-
-
 @tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"rules")))
 async def help(event):
-    await event.delete()
-    if event.query.user_id is not bot.uid:
-        await event.answer(
-            "This Is Not For U My Master",
-            catch_time=0,
-            alert=True,
-        )
+    if event.query.user_id == bot.uid:
+        await event.answer("This Is Not For U My Master", cache_time=0, alert=True)
     else:
         await tgbot.send_message(
             event.chat_id,
@@ -88,7 +81,6 @@ async def help(event):
 @tgbot.on(events.callbackquery.CallbackQuery(data=re.compile(b"users")))
 async def users(event):
     if event.query.user_id == bot.uid:
-        await event.delete()
         total_users = get_all_users()
         users_list = "⚜List Of Total Users In Bot.⚜ \n\n"
         for starked in total_users:
