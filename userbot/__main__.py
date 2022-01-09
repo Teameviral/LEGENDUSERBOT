@@ -3,21 +3,17 @@ import os
 import re
 import sys
 
-os.system("pip install telethon==1.24.0")
-
 import telethon.utils
 from telethon import Button, TelegramClient, custom, events
 
-from . import LOGS, LEGENDversion, bot
-from .Config import Config
-from .helpers.logger import logging
-from .helpers.runner import reload_LEGENDBOT
-from .start import abuses, addons, assistants, hekp, install, module, spams
+from userbot import LEGENDversion, bot
+from userbot.Config import Config
+from userbot.helpers.runner import reload_LEGENDBOT
+from userbot.start import abuses, addons, assistants, hekp, install, module, spams
 
 l1 = Config.COMMAND_HAND_LER
 l2 = Config.SUDO_COMMAND_HAND_LER
 LEGEND_PIC = "https://telegra.ph/file/e753315316673cff51085.mp4"
-LOGS = logging.getLogger(__name__)
 
 perf = "[ †hê Lêɠêɳ̃dẞø† ]"
 
@@ -48,18 +44,18 @@ else:
     bot.tgbot = None
     try:
         if Config.BOT_USERNAME is not None:
-            LOGS.info("Checking Telegram Bot Username...")
+            print("Checking Telegram Bot Username...")
             bot.tgbot = TelegramClient(
                 "BOT_TOKEN", api_id=Config.APP_ID, api_hash=Config.API_HASH
             ).start(bot_token=Config.BOT_TOKEN)
-            LOGS.info("Checking Completed. Proceeding to next step...")
-            LOGS.info("♥️ Starting LegendBot ♥️")
+            print("Checking Completed. Proceeding to next step...")
+            print("♥️ Starting LegendBot ♥️")
             bot.loop.run_until_complete(add_bot(Config.BOT_USERNAME))
-            LOGS.info("🥇🔥 LegendBot Startup Completed 🔥🥇")
+            print("🥇🔥 LegendBot Startup Completed 🔥🥇")
         else:
             bot.start()
     except Exception as e:
-        LOGS.error(f"BOT_TOKEN - {str(e)}")
+        print(f"BOT_TOKEN - {str(e)}")
         sys.exit()
 
 print("📍⚜Loading Modules / Plugins⚜✔")
@@ -109,9 +105,7 @@ async def killer():
             await asyncio.sleep(1)
             await bot.send_message("@BotFather", botname)
             await asyncio.sleep(1)
-            await bot.send_file(
-                "@BotFather", "userbot/resources/pics/-4965507108355287505_121.jpg"
-            )
+            await bot.send_file("@BotFather", "userbot/resources/pics/main.jpg")
             await asyncio.sleep(2)
         except Exception as e:
             print(e)
@@ -309,23 +303,23 @@ I will add more features Later 😅
 
 keyboard = [
     [
-        Button.inline("A", data="A"),
-        Button.inline("B", data="B"),
-        Button.inline("C", data="C"),
-        Button.inline("D", data="D"),
-        Button.inline("E", data="E"),
+        Button.inline("A", data="Ahack"),
+        Button.inline("B", data="Bhack"),
+        Button.inline("C", data="Chack"),
+        Button.inline("D", data="Dhack"),
+        Button.inline("E", data="Ehack"),
     ],
     [
-        Button.inline("F", data="F"),
-        Button.inline("G", data="G"),
-        Button.inline("H", data="H"),
-        Button.inline("I", data="I"),
-        Button.inline("J", data="J"),
+        Button.inline("F", data="Fhack"),
+        Button.inline("G", data="Ghack"),
+        Button.inline("H", data="Hhack"),
+        Button.inline("I", data="Ihack"),
+        Button.inline("J", data="Jhack"),
     ],
     [
-        Button.inline("K", data="K"),
-        Button.inline("L", data="L"),
-        Button.inline("M", data="M"),
+        Button.inline("K", data="Khack"),
+        Button.inline("L", data="Lhack"),
+        Button.inline("M", data="Mhack"),
     ],
     [Button.inline("Back", data="osg")],
 ]
